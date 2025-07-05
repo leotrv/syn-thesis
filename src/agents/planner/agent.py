@@ -1,23 +1,15 @@
 
 
+from src.llm_utils import get_gemini_model
+
 class Planner:
     def __init__(self):
-        pass
+        self.model = get_gemini_model()
 
     def create_plan(self, topic: str) -> str:
         print(f"Planner received topic: {topic}")
-        # In the future, this will use an LLM to generate a detailed plan.
-        plan = (
-            "1. Introduction\n"
-            "   1.1. Hook\n"
-            "   1.2. Thesis Statement\n"
-            "2. Literature Review\n"
-            "   2.1. Historical Context\n"
-            "   2.2. Key Theories\n"
-            "3. Methodology\n"
-            "4. Results\n"
-            "5. Discussion\n"
-            "6. Conclusion\n"
-        )
+        prompt = f"Create a detailed outline for a master's thesis chapter on the topic: {topic}. Include Introduction, Literature Review, Methodology, Results, Discussion, and Conclusion sections, with at least two sub-sections for each major section. Format the output as a numbered list with sub-sections indented."
+        response = self.model.generate_content(prompt)
+        plan = response.text
         return plan
 

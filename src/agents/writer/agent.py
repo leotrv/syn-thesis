@@ -1,29 +1,37 @@
 
 
+from src.llm_utils import get_gemini_model
+
 class WriterAgent:
     def __init__(self):
-        pass
+        self.model = get_gemini_model()
 
     def write_section(self, plan: str, summaries: dict[str, str], citations: list[str]) -> str:
         print("\nWriterAgent received plan, summaries, and citations.")
-        # This is a placeholder. In the future, this would use an LLM to write a section.
-        section_text = r"""
-\section{Introduction}
+        
+        summaries_text = "\n".join([f"- {summary}" for summary in summaries.values()])
+        citations_text = "\n".join([f"- {citation}" for citation in citations])
 
-This is the introduction to the chapter. It is based on the following plan:
+        prompt = f"""Based on the following plan, summaries of research papers, and citations, write a detailed section for a master's thesis. Focus on the content and structure as outlined in the plan. Incorporate insights from the summaries and reference the citations where appropriate. Ensure the output is in LaTeX format.
 
----
+Plan:
+{plan}
 
+Summaries of Research Papers:
+{summaries_text}
+
+Citations to be used:
+{citations_text}
+
+Begin writing the section now, starting with the \\section{{...}} command as per the plan's first section. Ensure all LaTeX special characters are properly escaped.
 """
-        section_text += self._escape_latex(plan)
-        section_text += "\n\n---\n\nHere are the summaries of the papers I read:\n\n"
-        for paper, summary in summaries.items():
-            section_text += f"- {self._escape_latex(summary)}\n"
+        response = self.model.generate_content(prompt)
+        section_content = response.text
 
-        section_text += "\nI will be citing the following papers: \n\n"
-        for citation in citations:
-            section_text += f"- {self._escape_latex(citation)}\n"
-        return section_text
+        # Escape LaTeX special characters in the generated content
+        section_content = self._escape_latex(section_content)
+
+        return section_content
 
     def _escape_latex(self, text: str) -> str:
         # Basic LaTeX escaping
