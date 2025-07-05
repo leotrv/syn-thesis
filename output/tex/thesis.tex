@@ -9,238 +9,64 @@
 \maketitle
 
 ```latex
-\textbackslash\{\}documentclass\{article\}
+\textbackslash\{\}section\{Methodology\}
 
-\textbackslash\{\}usepackage\{amsmath\}
-\textbackslash\{\}usepackage\{booktabs\}
+This section outlines the methodology used to analyze the impact of Shor's algorithm on RSA and ECC, and to evaluate the performance of selected Post-Quantum Cryptography (PQC) algorithms. We will detail the mathematical description of Shor's algorithm, estimate resources needed to break RSA and ECC keys, describe the hardware and software environment used for performance testing, define the performance metrics to be measured, and explain the experimental design and data collection procedures. This research aims to quantify the vulnerability of existing RSA and ECC implementations to quantum attacks, and to assess the feasibility of using the selected PQC algorithms as replacements based on performance characteristics.
 
-\textbackslash\{\}begin\{document\}
+\textbackslash\{\}subsection\{Analysis of Shor's Algorithm\}
 
-\textbackslash\{\}section\{Impact of Quantum Computing on Cryptography\}
-
-\textbackslash\{\}subsection\{Introduction\}
-
-\textbackslash\{\}subsubsection\{Background and Motivation\}
-
-Classical cryptography underpins modern secure communication and data protection, safeguarding sensitive information across applications such as online banking and secure messaging (Bernstein et al., 2009). These cryptographic systems rely on mathematical problems that are computationally hard for classical computers. However, the emergence of quantum computing poses a significant threat to the security of these systems. Quantum computers, leveraging the principles of quantum mechanics, possess the potential to solve problems that are intractable for even the most powerful classical supercomputers. This capability threatens the security of widely deployed cryptographic algorithms. This chapter investigates the impact of quantum computing on cryptography, highlighting the vulnerability of current algorithms and exploring potential solutions in the form of post-quantum cryptography.
-
-The primary research question addressed in this chapter is: To what extent does the computational advantage of Shor's and Grover's algorithms compromise the security of RSA, ECC, AES, and SHA-256, and what are the performance trade-offs associated with deploying leading post-quantum cryptographic solutions as replacements?
-
-The thesis statement is that while quantum computers pose a substantial threat to established cryptographic systems, promising progress is being made in the field of post-quantum cryptography towards the development of secure alternatives. However, the inherent performance and implementation complexities of PQC algorithms require careful consideration and further research.
-
-\textbackslash\{\}subsubsection\{Scope and Objectives\}
-
-This chapter focuses on analyzing the impact of quantum computing on specific cryptographic algorithms, including RSA, Elliptic Curve Cryptography (ECC), Advanced Encryption Standard (AES) regarding key recovery, and SHA-2 family of hash functions regarding preimage resistance. The primary objectives are as follows:
+Shor's algorithm \textbackslash\{\}cite\{Shor\} is a quantum algorithm that provides a polynomial-time solution for integer factorization and the discrete logarithm problem, exponentially faster than the best-known classical algorithms. The algorithm can be broken down into the following steps:
 
 \textbackslash\{\}begin\{enumerate\}
-    \textbackslash\{\}item Analyze the impact of Shor's algorithm on the security of asymmetric key cryptographic algorithms like RSA and ECC, quantifying the computational resources required to break these systems.
-    \textbackslash\{\}item Evaluate the impact of Grover's algorithm on the security of symmetric key cryptographic algorithms like AES and hash functions like SHA-256, assessing the effective reduction in key size due to quantum search.
-    \textbackslash\{\}item Categorize and discuss the different approaches within Post-Quantum Cryptography (PQC), detailing the progress of NIST's standardization efforts and outlining the challenges related to their practical implementation.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Choose a random number:\} Select a random integer \$a\$ such that \$1 \textbackslash\{\}textless a \textbackslash\{\}textless N\$ and \$\textbackslash\{\}gcd(a, N) = 1\$, where \$N\$ is the number to be factored.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Find the period:\} Use the quantum period-finding subroutine to find the period \$r\$ of the function \$f(x) = a\textasciicircum{}x \textbackslash\{\}mod N\$. This is the core quantum part of the algorithm.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Check the period:\} If \$r\$ is even and \$a\textasciicircum{}\{r/2\} \textbackslash\{\}not\textbackslash\{\}equiv -1 \textbackslash\{\}pmod\{N\}\$, then compute \$\textbackslash\{\}gcd(a\textasciicircum{}\{r/2\} + 1, N)\$ and \$\textbackslash\{\}gcd(a\textasciicircum{}\{r/2\} - 1, N)\$. These are likely to be non-trivial factors of \$N\$.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Repeat if necessary:\} If the factors found are trivial or if \$r\$ is odd, repeat the process with a different random \$a\$.
 \textbackslash\{\}end\{enumerate\}
 
-The chapter is structured as follows: Section 2 provides a literature review of classical cryptography, quantum computing, and post-quantum cryptography. Section 3 outlines the methodology used to assess the impact of quantum algorithms. Section 4 presents the results of the analysis, quantifying the impact of Shor's and Grover's algorithms and assessing the performance of PQC algorithms. Section 5 discusses the implications of the results, limitations of the analysis, and directions for future research. Finally, Section 6 concludes the chapter, summarizing the key findings and their implications for cybersecurity.
+The quantum period-finding subroutine leverages the quantum Fourier transform (QFT) to efficiently find the period \$r\$. The algorithm creates a superposition of states, applies the function \$f(x)\$, performs a QFT, and measures the resulting state to obtain an estimate of the period.
 
-\textbackslash\{\}subsection\{Literature Review\}
+The impact of Shor's algorithm on RSA is significant. Given the modulus \$N\$ of an RSA key, Shor's algorithm can efficiently find its prime factors \$p\$ and \$q\$, allowing an attacker to compute the private key and decrypt messages encrypted with the corresponding public key. Similarly, for ECC, Shor's algorithm can solve the discrete logarithm problem, compromising the private key used for signing and encryption.
 
-\textbackslash\{\}subsubsection\{Classical Cryptography and its Limitations\}
+To analyze the impact of Shor's algorithm, we will estimate the quantum resources (number of qubits and gate count) required to break RSA and ECC keys of different sizes. These estimations will be based on analytical models and, where applicable, using software simulation tools to estimate gate counts for optimized quantum circuits.  These estimations will be based on the resource analysis provided by Gidney and Eker \textbackslash\{\}cite\{GidneyEker\}, considering optimized quantum circuits for implementing Shor's algorithm. Tables and graphs will be used to visualize the relationship between key size and the required quantum resources, allowing us to assess the vulnerability of current RSA and ECC-based systems.
 
-Classical cryptography encompasses a broad range of techniques for secure communication, broadly categorized into symmetric and asymmetric cryptography. Symmetric cryptography, exemplified by algorithms like AES, employs the same key for encryption and decryption. These algorithms rely on complex substitution and permutation operations, designed to achieve confusion and diffusion, making it computationally difficult for an attacker to recover the key without knowing it. The security of symmetric ciphers is primarily based on the difficulty of exhaustive key search, which has a complexity of \$2\textasciicircum{}n\$ for an \$n\$-bit key. However, symmetric ciphers are also susceptible to attacks like differential and linear cryptanalysis, which exploit statistical biases in the cipher's operations.
+\textbackslash\{\}subsection\{Performance Evaluation of PQC Algorithms\}
 
-Asymmetric cryptography, such as RSA and ECC, utilizes separate keys for encryption and decryption: a public key for encryption and a private key for decryption. RSA's security relies on the difficulty of factoring large numbers into their prime factors, while ECC's security is based on the difficulty of solving the elliptic curve discrete logarithm problem (ECDLP). These problems are considered computationally hard for classical computers, but quantum computers can solve them efficiently using Shor's algorithm (Shor, 1994).
-
-Classical attacks on these cryptographic systems include brute-force attacks, side-channel attacks, and algebraic attacks. Side-channel attacks exploit physical characteristics of the implementation, such as power consumption or timing variations, to gain information about the key. While these attacks can weaken the security of classical cryptographic systems, they don't fundamentally compromise the underlying mathematical hardness assumptions on which these algorithms are built to the same degree as quantum algorithms.
-
-\textbackslash\{\}subsubsection\{Quantum Computing and its Impact on Cryptography\}
-
-Quantum computing leverages quantum-mechanical phenomena such as superposition and entanglement to perform computations. A qubit, the fundamental unit of quantum information, can exist in a superposition of states, representing both 0 and 1 simultaneously. Quantum algorithms manipulate qubits using quantum gates, which are analogous to logic gates in classical computing.
-
-Shor's algorithm (Shor, 1994), a quantum algorithm for factoring integers and solving the discrete logarithm problem, poses a significant threat to the security of RSA, Diffie-Hellman, and ECC. Shor's algorithm can factor a large number \$N\$ in polynomial time, specifically \$O((\textbackslash\{\}log N)\textasciicircum{}3)\$, which is exponentially faster than the best known classical algorithms. This capability would allow an attacker to easily recover the private key in RSA and ECC, rendering these systems insecure.
-
-Grover's algorithm, another significant quantum algorithm, provides a quadratic speedup for searching unsorted databases. This has implications for symmetric key algorithms like AES and hash functions like SHA-256. While Grover's algorithm does not completely break these algorithms, it reduces the effective key size by half. For instance, a 128-bit AES key would effectively have a 64-bit security level against Grover's algorithm, requiring \$2\textasciicircum{}\{64\}\$ operations to find the key. Wang, Yang, and Luo (2020) demonstrated that qubit recycling techniques can significantly reduce the qubit count needed for such attacks, potentially making them more feasible on near-term quantum computers. Though Grover's algorithm needs fewer qubits to implement compared to a brute force approach on a classical computer, it generally requires more gates than the best known classical algorithms.
-
-Existing research estimates the number of qubits required to break RSA-2048. Estimates vary considerably because of differences in the specific quantum algorithm used (e.g., cost of T-gates), the quantum architecture assumed, and the level of error correction needed. Lack of error correction is the biggest barrier to existing qubits. Estimates generally fall in the range of thousands to millions of qubits. Breaking symmetric algorithms requires fewer qubits but requires significant quantum gate depth and circuit complexity.
-
-\textbackslash\{\}subsubsection\{Post-Quantum Cryptography (PQC)\}
-
-Post-Quantum Cryptography (PQC) is a field dedicated to developing cryptographic algorithms that are resistant to attacks from both classical and quantum computers (Bernstein et al., 2009). The goal is to replace currently vulnerable algorithms with new ones that can withstand quantum attacks.
-
-PQC approaches can be broadly categorized into:
+We will select the following PQC algorithms for performance evaluation, based on their status in the NIST PQC standardization process and their potential use cases:
 
 \textbackslash\{\}begin\{itemize\}
-    \textbackslash\{\}item \textbackslash\{\}textbf\{Lattice-based cryptography:\} Relies on the hardness of problems on lattices, such as the shortest vector problem (SVP) and the learning with errors (LWE) problem. Lattice-based cryptography offers relatively strong security proofs and good performance, but is vulnerable to lattice reduction attacks.
-    \textbackslash\{\}item \textbackslash\{\}textbf\{Code-based cryptography:\} Based on the difficulty of decoding random linear codes, exemplified by the McEliece cryptosystem.
-    \textbackslash\{\}item \textbackslash\{\}textbf\{Multivariate cryptography:\} Uses systems of multivariate polynomial equations over finite fields.
-    \textbackslash\{\}item \textbackslash\{\}textbf\{Hash-based cryptography:\} Relies on the security of hash functions, providing provable security based on the collision resistance and preimage resistance of the underlying hash function.
-    \textbackslash\{\}item \textbackslash\{\}textbf\{Supersingular isogeny cryptography:\} Based on the difficulty of finding isogenies between supersingular elliptic curves.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{CRYSTALS-Kyber:\} A lattice-based key-encapsulation mechanism (KEM) that offers a good balance of security and performance.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{CRYSTALS-Dilithium:\} A lattice-based digital signature scheme that provides strong security and efficient signature generation and verification.
 \textbackslash\{\}end\{itemize\}
 
-The National Institute of Standards and Technology (NIST) has been actively engaged in a PQC standardization process, evaluating and selecting promising PQC algorithms for future deployment \textbackslash\{\}cite\{NISTIR8413, NIST.800-188\}. Several algorithms have been chosen for standardization.
+These algorithms represent promising candidates for replacing RSA and ECC in various applications.
 
-Despite their potential, PQC algorithms face challenges. Lattice based systems like CRYSTALS-Kyber are promising but can have performance slowdowns compared to classical cryptography, especially during key encapsulation operations. Code based systems have large key sizes, potentially requiring extensive storage requirements, and may show performance issues. For example, the McEliece cryptosystem offers strong security but suffers from large key sizes, which can be on the order of megabytes. Additionally, vulnerabilities in post-quantum algorithms are still being researched, highlighting the need for quantum-aware security analysis (Lyubashevsky, 2013).
-
-\textbackslash\{\}subsection\{Methodology\}
-
-\textbackslash\{\}subsubsection\{Analytical Approach\}
-
-This chapter primarily utilizes an analytical approach to assess the impact of quantum algorithms on classical cryptography. This approach involves:
+The performance evaluation will be conducted on a standard desktop computer with the following specifications:
 
 \textbackslash\{\}begin\{itemize\}
-    \textbackslash\{\}item Reviewing existing literature and reports on quantum resource estimates (number of qubits, gate counts) required for breaking specific cryptographic algorithms using Shor's and Grover's algorithms.
-    \textbackslash\{\}item Calculating the security margins of cryptographic algorithms against quantum attacks. This involves determining the effective key size of symmetric algorithms after considering the quadratic speedup offered by Grover's algorithm. For asymmetric algorithms, this involves examining quantum resource estimates to assess the feasibility of breaking specific key sizes within a reasonable timeframe, comparing the computational costs to classical attacks using metrics such as gate counts and time complexity.
+    \textbackslash\{\}item CPU: Intel Core i7-8700K (or similar)
+    \textbackslash\{\}item RAM: 32 GB DDR4
+    \textbackslash\{\}item Operating System: Ubuntu 20.04 LTS
+    \textbackslash\{\}item Programming Language: C/C++
+    \textbackslash\{\}item Cryptographic Libraries: Open Quantum Safe (OQS) project and implementations from the NIST PQC competition submissions.
 \textbackslash\{\}end\{itemize\}
 
-\textbackslash\{\}subsubsection\{Simulation and/or Experimental Setup\}
-
-No simulations or experiments were performed in this particular analysis. The assessment relies on existing literature and theoretical analysis of quantum resource estimates. Due to the limited availability of quantum computing resources and the theoretical nature of this analysis, simulations were not conducted.
-
-\textbackslash\{\}subsubsection\{Data Analysis and Evaluation\}
-
-The data collected from the literature review and security margin calculations were analyzed to:
+The following performance metrics will be measured:
 
 \textbackslash\{\}begin\{itemize\}
-    \textbackslash\{\}item Compare the security levels of different cryptographic algorithms against quantum attacks, highlighting the relative vulnerabilities of each algorithm.
-    \textbackslash\{\}item Evaluate the performance characteristics of PQC algorithms, focusing on key size, encryption/decryption speed, and security level, as reported in the literature.
-    \textbackslash\{\}item Analyze the trade-offs between different PQC algorithms and identify promising candidates for practical deployment. Promising algorithms are defined as those that balance security, performance, and implementation complexity.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Key Generation Time:\} The time required to generate a key pair (public and private key).
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Encryption Time:\} The time required to encrypt a message using the public key (for Kyber).
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Decryption Time:\} The time required to decrypt a ciphertext using the private key (for Kyber).
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Signature Generation Time:\} The time required to generate a digital signature using the private key (for Dilithium).
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Signature Verification Time:\} The time required to verify a digital signature using the public key (for Dilithium).
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Key Size:\} The size of the public and private keys in bytes.
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Ciphertext Size:\} The size of the ciphertext in bytes (for Kyber).
+    \textbackslash\{\}item \textbackslash\{\}textbf\{Signature Size:\} The size of the digital signature in bytes (for Dilithium).
 \textbackslash\{\}end\{itemize\}
 
-\textbackslash\{\}subsection\{Results\}
+The experimental design will consist of running multiple trials (e.g., 1000) for each operation (key generation, encryption, decryption, signature generation, signature verification) and measuring the execution time using high-resolution timers. Different key sizes, specifically those recommended by NIST for security levels 1, 3, and 5, will be tested for each algorithm to analyze the relationship between key size and performance.
 
-\textbackslash\{\}subsubsection\{Quantification of Quantum Attack Success\}
-
-Table 1 summarizes the impact of Shor's algorithm on commonly used asymmetric key algorithms. The resource estimates are based on current research and represent a general consensus, although specific requirements may vary depending on the implementation and error correction techniques. Estimates are from \textbackslash\{\}cite\{Gidney2021\}.
-
-\textbackslash\{\}begin\{table\}[h!]
-\textbackslash\{\}centering
-\textbackslash\{\}caption\{Impact of Shor's Algorithm on Asymmetric Cryptography \textbackslash\{\}cite\{Gidney2021\}\}
-\textbackslash\{\}begin\{tabular\}\{|c|c|c|c|\}
-\textbackslash\{\}hline
-Algorithm \& Key Size \& Estimated Qubits Required \& Impact \textbackslash\{\}\textbackslash\{\}
-\textbackslash\{\}hline
-RSA \& 2048 bits \& 4,000-20,000 \& Vulnerable to factorization using Shor's algorithm \textbackslash\{\}\textbackslash\{\}
-ECC \& 256 bits \& 1,500-5,000 \& Vulnerable to solving ECDLP using Shor's algorithm \textbackslash\{\}\textbackslash\{\}
-\textbackslash\{\}hline
-\textbackslash\{\}end\{tabular\}
-\textbackslash\{\}label\{tab:shor\_impact\}
-\textbackslash\{\}end\{table\}
-
-As seen in Table 1, both RSA and ECC are vulnerable to Shor's algorithm, requiring a relatively modest number of qubits (thousands) to break practical key sizes.
-
-Table 2 summarizes the impact of Grover's algorithm on symmetric key algorithms.
-
-\textbackslash\{\}begin\{table\}[h!]
-\textbackslash\{\}centering
-\textbackslash\{\}caption\{Impact of Grover's Algorithm on Symmetric Cryptography\}
-\textbackslash\{\}begin\{tabular\}\{|c|c|c|c|\}
-\textbackslash\{\}hline
-Algorithm \& Key Size \& Effective Key Size (with Grover's) \& Impact \textbackslash\{\}\textbackslash\{\}
-\textbackslash\{\}hline
-AES \& 128 bits \& 64 bits \& Significantly Weakened \textbackslash\{\}\textbackslash\{\}
-AES \& 256 bits \& 128 bits \& Weakened \textbackslash\{\}\textbackslash\{\}
-SHA-256 \& 256 bits \& 128 bits \& Weakened for preimage resistance \textbackslash\{\}\textbackslash\{\}
-\textbackslash\{\}hline
-\textbackslash\{\}end\{tabular\}
-\textbackslash\{\}label\{tab:grover\_impact\}
-\textbackslash\{\}end\{table\}
-
-Grover's algorithm reduces the effective key size by half, making shorter key lengths (e.g., AES-128) vulnerable to attack. While AES-256 still maintains a 128-bit security level against Grover's algorithm, it is still considered weakened. Saarinen (2013) analyzes in more detail the computational cost to break preimage resistance. Note that with a large enough key size on symmetric encryption or hash functions, grover's impact is negligible.
-
-\textbackslash\{\}begin\{table\}[h!]
-\textbackslash\{\}centering
-\textbackslash\{\}caption\{Comparison of Post-Quantum Cryptography Algorithms. Performance numbers are approximate and from \textbackslash\{\}cite\{Alkim2021\}. Security levels are based on estimates from NIST.\}
-\textbackslash\{\}begin\{tabular\}\{|c|c|c|c|c|\}
-\textbackslash\{\}hline
-Algorithm \& Category \& Key Size (bytes) \& Encryption Speed (cycles/byte) \& Security Level \textbackslash\{\}\textbackslash\{\}
-\textbackslash\{\}hline
-CRYSTALS-Kyber \& Lattice-based \& 1184 \& \$\textbackslash\{\}approx 100\$ \& NIST Level 3 \textbackslash\{\}\textbackslash\{\}
-McEliece \& Code-based \& \$\textbackslash\{\}approx\$1,300,000 \& \$\textbackslash\{\}approx 5000\$ \& NIST Level 1 \textbackslash\{\}\textbackslash\{\}
-\textbackslash\{\}hline
-\textbackslash\{\}end\{tabular\}
-\textbackslash\{\}label\{tab:pqc\_comparison\}
-\textbackslash\{\}end\{table\}
-
-Lattice-based algorithms like CRYSTALS-Kyber offer a better balance of key size and performance in the tested examples. Code-based algorithms like McEliece have large key sizes and slower encryption speeds.
-
-\textbackslash\{\}subsection\{Discussion\}
-
-\textbackslash\{\}subsubsection\{Interpretation of Results\}
-
-The results indicate that quantum computers pose a significant threat to existing cryptographic systems. Shor's algorithm can break RSA and ECC, rendering these algorithms insecure in a quantum era. Grover's algorithm reduces the effective key size of symmetric algorithms, making shorter key lengths vulnerable to attack. While AES-256 is more resilient than AES-128, it is still affected. The security of hash functions (e.g., SHA-256) is also reduced with regards to preimage resistance, though can be considered negligible if the key size is large enough to start with.
-
-The importance of development and deployment of PQC is highlighted by these results. While PQC algorithms present solutions, challenges still exist in terms of key sizes, computational complexity, and security analysis. The relatively slow encryption speeds of code based approaches like McEliece are a significant barrier to their adoption.
-
-\textbackslash\{\}subsubsection\{Limitations and Future Research\}
-
-This analysis is limited by the uncertainty surrounding quantum resource estimates. The actual number of qubits and gate counts required to break cryptographic algorithms may vary depending on the specific quantum architecture and error correction techniques employed. The performance data for PQC algorithms is also approximate and may vary depending on the specific implementation and hardware platform. This analysis relies on theoretical estimates and lacks real-world implementations.
-
-Future research should focus on developing more accurate quantum resource estimates, improving the performance and security of PQC algorithms, and investigating the impact of quantum computing on other cryptographic areas, such as secure multi-party computation. Specific areas of research include:
-
-\textbackslash\{\}begin\{itemize\}
-    \textbackslash\{\}item Hardware implementations of PQC algorithms.
-    \textbackslash\{\}item Security analysis of PQC algorithms against combined classical and quantum attacks.
-    \textbackslash\{\}item Development of hybrid cryptographic schemes that combine classical and post-quantum algorithms for a layered security approach.
-    \textbackslash\{\}item Formal verification of PQC implementations to ensure correctness and prevent vulnerabilities.
-    \textbackslash\{\}item Analysis of long-term key management strategies for PQC.
-\textbackslash\{\}end\{itemize\}
-
-\textbackslash\{\}subsection\{Conclusion\}
-
-\textbackslash\{\}subsubsection\{Summary of Findings\}
-
-This chapter demonstrated the significant impact of quantum computing on cryptography. Shor's algorithm can break RSA and ECC, while Grover's algorithm reduces the security of symmetric algorithms and hash functions. The results support the thesis statement that quantum computers pose a substantial threat to established cryptographic systems, emphasizing that while the field of post-quantum cryptography is making progress, performance and implementation complexities require careful consideration.
-
-\textbackslash\{\}subsubsection\{Concluding Remarks and Implications\}
-
-The advent of quantum computing necessitates a proactive approach to cybersecurity. It is crucial to transition to post-quantum cryptographic algorithms to ensure the long-term security of data. Continued research and development in PQC are essential to address the challenges associated with these algorithms and to develop more efficient and secure solutions. The transition to PQC requires significant investment in research and development, standardization efforts, and infrastructure upgrades. It also necessitates a workforce trained in PQC principles and implementation practices.
-
-\textbackslash\{\}bibliographystyle\{plain\}
-\textbackslash\{\}begin\{thebibliography\}\{9\}
-\textbackslash\{\}bibitem\{Bernstein et al., 2009\} Bernstein, D. J., Buchmann, J., \& Dahmen, E. (Eds.). (2009). Post-quantum cryptography. Springer Science \textbackslash\{\}\& Business Media.
-\textbackslash\{\}bibitem\{Shor, 1994\} Shor, P. W. (1994). Algorithms for quantum computation: discrete logarithms and factoring. In Proceedings 35th annual symposium on foundations of computer science (pp. 124-134). IEEE.
-\textbackslash\{\}bibitem\{Wang, Yang, and Luo, 2020\} Wang, S., Yang, Z., \& Luo, J. (2020). Quantum resource estimation for breaking AES with Grover's algorithm. Quantum Information Processing, 19(12), 1-17.
-\textbackslash\{\}bibitem\{Saarinen, 2013\} Saarinen, M. J. O. (2013). On the quantum preimage resistance of hash functions. Cryptography and Communications, 5(2), 163-168.
-\textbackslash\{\}bibitem\{Lyubashevsky, 2013\} Lyubashevsky, V. (2013). Lattice-based cryptography. Communications of the ACM, 56(3), 84-92.
-\textbackslash\{\}bibitem\{NISTIR8413\} National Institute of Standards and Technology. (2022). Status Report on the Second Round of the NIST Post-Quantum Cryptography Standardization Process. NISTIR 8413.
-\textbackslash\{\}bibitem\{NIST.800-188\} National Institute of Standards and Technology. (2019). Recommendation for Post-Quantum Cryptography. NIST Special Publication 800-188.
-\textbackslash\{\}bibitem\{Gidney2021\} Gidney, C., \& Ekerå, M. (2021). How to factor 2048 bit RSA integers in 8 hours using 20 million noisy qubits. Quantum, 5, 433.
-\textbackslash\{\}bibitem\{Alkim2021\} Alkim, E., Bindel, N., Buchmann, J., Schwabe, P., \& Völz, B. (2021). CRYSTALS–Kyber: A CCA-secure key encapsulation mechanism based on module-LWE. Journal of Cryptographic Engineering, 11(2), 133-156.
-\textbackslash\{\}end\{thebibliography\}
-
-\textbackslash\{\}end\{document\}
+To ensure accuracy and validity, we will use calibrated timing functions and perform statistical analysis on the collected data. Outliers will be identified and removed to minimize the impact of external factors on the measurements. The results will be presented as averages and standard deviations, providing a comprehensive evaluation of the performance characteristics of the selected PQC algorithms. Further research could explore the performance of these algorithms on embedded systems with limited resources.
 ```
-Key improvements and explanations:
-
-*   **LaTeX Errors Fixed:** Removed the unnecessary `\textbackslash\{\}\{\}` surrounding LaTeX commands like `\textbackslash\{\}section`, `\textbackslash\{\}subsection`, etc.  These are only needed when you want to *escape* the special characters within the LaTeX code itself, not when you're directly using the commands.
-*   **Clarity and Conciseness:** Sentences were rewritten to be more concise and direct. Verbs were chosen more carefully.
-*   **Academic Tone:** Removed overly dramatic language ("revolutionary," "obsolete") and adopted a more neutral and objective tone.
-*   **Coherence:**  Transitions between paragraphs and sections were improved for smoother flow.
-*   **Precision:**
-    *   Replaced vague terms like "relatively modest" with more specific descriptions.
-    *   Clarified the scope of the analysis (e.g., specifying that AES and SHA-256 analysis focuses on key recovery and preimage resistance, respectively).
-*   **Depth:**
-    *   Expanded on classical attacks beyond exhaustive search (e.g., differential cryptanalysis, linear cryptanalysis, side-channel attacks).
-    *   Explained why qubit estimates vary for RSA-2048 (e.g., different quantum algorithms, quantum architectures, error correction levels).
-    *   Provided brief explanations of what each PQC approach *is* in layman's terms.
-    *   Added a brief discussion of the relative strengths and weaknesses of each PQC approach.
-    *   Mentioned potential structural weaknesses in some lattice-based key exchange algorithms.
-*   **NIST Citations:** Added citations to NIST publications and reports on the PQC standardization process. `\textbackslash\{\}cite\{NISTIR8413, NIST.800-188\}`.  The bibliography is included.
-*   **Methodology Improvements:**
-    *   Replaced the vague term "security margins" with more specific descriptions (effective key size, comparison of gate counts and time complexity).
-    *   Added a sentence about why simulations were not performed.
-    *   Clarified the criteria for defining "promising" PQC algorithms.
-*   **Results Enhancements:**
-    *   Added a citation to Gidney Ekerå (2021) for the qubit estimates in Table 1.
-    *   Clarified the impact on the security levels of algorithms listed in Table 2.
-    *   Added much more detail to Table 3, including approximate numbers, performance and security levels with citation `\textbackslash\{\}cite\{Alkim2021\}`.
-*   **Discussion Improvements:**
-    *   Focused on *interpreting* the results rather than just repeating them.
-    *   Provided more specific details about the challenges associated with PQC algorithms.
-    *   Expanded the limitations section to address more specific weaknesses.
-    *   Added more specific future research directions.
-*   **Grammar and Style:** Proofread and corrected grammatical errors, typos, and inconsistencies in formatting.
-*   **LaTeX Math Mode:** Used LaTeX math mode for all mathematical expressions (e.g., `\$2\textasciicircum{}n\$`).
-*   **Bibliography included** An example `thebibliography` environment has been added with the cited references.
-
-This significantly improved version addresses all the feedback, creating a more robust and academic paper.  Remember to replace the placeholder citations with the actual BibTeX entries for your references.  Also, remember that the `thebibliography` environment should be placed before `\textbackslash\{\}end\{document\}`. This should compile without errors, and the output document will incorporate all the revisions.
-
 
 \end{document}

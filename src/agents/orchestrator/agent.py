@@ -42,7 +42,10 @@ class Orchestrator:
                 print(f"- {paper}: {summary}")
 
             # Initial writing
-            section = self.writer_agent.write_section(plan, summaries, papers)
+            existing_thesis_content = self.latex_agent.read_latex_document()
+
+            # Initial writing
+            section = self.writer_agent.write_section(plan, summaries, papers, existing_thesis_content)
             print("\n--- Initial Section Written ---")
             print(section)
 

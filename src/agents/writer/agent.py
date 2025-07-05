@@ -6,14 +6,20 @@ class WriterAgent:
     def __init__(self):
         self.model = get_gemini_model()
 
-    def write_section(self, plan: str, summaries: dict[str, str], citations: list[str]) -> str:
+    def write_section(self, plan: str, summaries: dict[str, str], citations: list[str], existing_thesis_content: str) -> str:
         print("\nWriterAgent received plan, summaries, and citations.")
         
         summaries_text = "\n".join([f"- {summary}" for summary in summaries.values()])
         citations_text = "\n".join([f"- {citation}" for citation in citations])
 
-        prompt = f"""Based on the following plan, summaries of research papers, and citations, write a detailed section for a master's thesis. Focus on the content and structure as outlined in the plan. Incorporate insights from the summaries and reference the citations where appropriate. Ensure the output is in LaTeX format.
+        if existing_thesis_content:
+            existing_content_prompt = f"You are continuing to write a master's thesis. Here is the current content of the thesis:\n\n{existing_thesis_content}\n\nYour task is to write the next logical section or expand on an existing section based on the provided plan. Do not rewrite the entire thesis. Only provide the new or updated section content. Ensure proper LaTeX structure and continuity."
+        else:
+            existing_content_prompt = ""
 
+        prompt = fr"""Based on the following plan, summaries of research papers, and citations, write a detailed section for a master's thesis. Focus on the content and structure as outlined in the plan. Incorporate insights from the summaries and reference the citations where appropriate. Ensure the output is in LaTeX format.
+
+{existing_content_prompt}
 Plan:
 {plan}
 
@@ -23,7 +29,7 @@ Summaries of Research Papers:
 Citations to be used:
 {citations_text}
 
-Begin writing the section now, starting with the \\section{{...}} command as per the plan's first section. Ensure all LaTeX special characters are properly escaped.
+Begin writing the section now, starting with the \section{{{...}}} command as per the plan's first section. Ensure all LaTeX special characters are properly escaped.
 """
         response = self.model.generate_content(prompt)
         section_content = response.text

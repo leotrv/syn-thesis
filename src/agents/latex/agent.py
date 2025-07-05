@@ -26,3 +26,13 @@ class LatexAgent:
         with open(os.path.join(self.output_dir, filename), "w") as f:
             f.write(latex_template)
 
+    def read_latex_document(self, filename="thesis.tex") -> str:
+        file_path = os.path.join(self.output_dir, filename)
+        if os.path.exists(file_path):
+            print(f"\nReading existing LaTeX document from {file_path}")
+            with open(file_path, "r") as f:
+                return f.read()
+        else:
+            print(f"\nNo existing LaTeX document found at {file_path}. Starting fresh.")
+            return ""
+
