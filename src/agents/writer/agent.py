@@ -33,6 +33,23 @@ Begin writing the section now, starting with the \\section{{...}} command as per
 
         return section_content
 
+    def revise_section(self, original_text: str, feedback: str) -> str:
+        print("\nWriterAgent received feedback for revision.")
+        prompt = f"""You are a writer. Revise the following text based on the provided feedback. Ensure the revised text addresses all points in the feedback, maintains an academic tone, and is in LaTeX format. Pay close attention to clarity, coherence, and grammar. Ensure all LaTeX special characters are properly escaped.
+
+Original Text:
+{original_text}
+
+Feedback:
+{feedback}
+
+Revised Text:
+"""
+        response = self.model.generate_content(prompt)
+        revised_content = response.text
+        revised_content = self._escape_latex(revised_content)
+        return revised_content
+
     def _escape_latex(self, text: str) -> str:
         # Basic LaTeX escaping
         text = text.replace("\\", "\\textbackslash{}") # Escape backslashes first

@@ -5,6 +5,7 @@ from src.agents.citation.agent import CitationAgent
 from src.agents.summarizer.agent import SummarizerAgent
 from src.agents.writer.agent import WriterAgent
 from src.agents.latex.agent import LatexAgent
+from src.agents.editor.agent import EditorAgent
 
 class Orchestrator:
     def __init__(self):
@@ -14,28 +15,47 @@ class Orchestrator:
         self.summarizer_agent = SummarizerAgent()
         self.writer_agent = WriterAgent()
         self.latex_agent = LatexAgent()
+        self.editor_agent = EditorAgent()
 
-    def execute_task(self, task: str):
-        print(f"Orchestrator is executing task: {task}")
-        plan = self.planner.create_plan(task)
-        print("\n--- Plan Created ---")
-        print(plan)
+    def handle_thesis_command(self, goal: str, topic: str | None = None):
+        print(f"Orchestrator received goal: {goal} with topic: {topic}")
 
-        papers = self.researcher.find_papers(task)
-        print("\n--- Found Papers ---")
-        for paper in papers:
-            print(f"- {paper}")
+        if goal == "write a chapter":
+            if not topic:
+                print("Error: 'topic' is required for 'write a chapter' goal.")
+                return
+            print(f"Orchestrator is executing task: Write a chapter on {topic}")
+            plan = self.planner.create_plan(topic)
+            print("\n--- Plan Created ---")
+            print(plan)
 
-        self.citation_agent.add_citations(papers)
+            papers = self.researcher.find_papers(topic)
+            print("\n--- Found Papers ---")
+            for paper in papers:
+                print(f"- {paper}")
 
-        summaries = self.summarizer_agent.summarize_papers(papers)
-        print("\n--- Summaries ---")
-        for paper, summary in summaries.items():
-            print(f"- {paper}: {summary}")
+            self.citation_agent.add_citations(papers)
 
-        section = self.writer_agent.write_section(plan, summaries, papers)
-        print("\n--- Section Written ---")
-        print(section)
+            summaries = self.summarizer_agent.summarize_papers(papers)
+            print("\n--- Summaries ---")
+            for paper, summary in summaries.items():
+                print(f"- {paper}: {summary}")
 
-        self.latex_agent.create_latex_document(section)
+            # Initial writing
+            section = self.writer_agent.write_section(plan, summaries, papers)
+            print("\n--- Initial Section Written ---")
+            print(section)
+
+            # Feedback loop
+            feedback = self.editor_agent.provide_feedback(section)
+            print("\n--- Editor Feedback ---")
+            print(feedback)
+
+            revised_section = self.writer_agent.revise_section(section, feedback)
+            print("\n--- Revised Section Written ---")
+            print(revised_section)
+
+            self.latex_agent.create_latex_document(revised_section)
+        else:
+            print(f"Unknown goal: {goal}")
 
