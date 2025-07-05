@@ -15,6 +15,14 @@ Syn-Thesis is a multi-agent system designed to assist in the process of writing 
 *   **Persistent Writing:** Agents can read existing thesis content and continue writing or revise sections, allowing for progress over multiple sessions.
 *   **Extensible Architecture:** Designed to easily integrate new agents and functionalities.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+*   **Leo Traven**
+
 ## Setup Instructions
 
 Follow these steps to set up the Syn-Thesis project on your local machine.
