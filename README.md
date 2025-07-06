@@ -40,10 +40,10 @@ cd /path/to/your/desired/directory
 Clone the Syn-Thesis repository from GitHub:
 
 ```bash
-git clone https://github.com/your-username/syn-thesis.git
+git clone https://github.com/leotrv/syn-thesis.git
 cd syn-thesis
 ```
-**Note:** Replace `https://github.com/your-username/syn-thesis.git` with the actual URL of your repository.
+**Note:** Replace `https://github.com/leotrv/syn-thesis.git` with the actual URL of your repository.
 
 ### 3. Set Up a Virtual Environment with `uv`
 
@@ -78,7 +78,7 @@ Syn-Thesis requires access to a Google Cloud LLM. You need to provide your Googl
     **Important:**
     *   **Security:** Never commit your `.env` file to version control. It has been added to `.gitignore` to prevent accidental commits.
     *   **API Key:** Obtain your Google API Key from the Google Cloud Console.
-    *   **Model Name:** Choose a suitable model name (e.g., `gemini-pro`, `gemini-1.5-flash`).
+    *   **Model Name:** Choose a suitable model name (e.g., `gemini-2.0-flash`).
 
 ## How to Use Syn-Thesis
 
